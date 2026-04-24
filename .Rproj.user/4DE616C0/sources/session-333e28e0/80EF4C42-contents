@@ -1,11 +1,10 @@
-
 # ==============================================================================
 # Aula 13: Estimação Pontual Computacional na Família Exponencial
-# Objetivo: Verificação empírica de propriedades em amostras finitas e assintóticas
+# Objetivo: Estimação e verificação empírica de propriedades em amostras finitas e assintóticas
 # Modelo: X_i ~ Bernoulli(theta)
 # ==============================================================================
 
-# 1. Definição do Espaço Paramétrico e Hiperparâmetros da Simulação
+# 1. Definição do Espaço Paramétrico e parâmetros da Simulação
 set.seed(20260424)   # Para reprodutibilidade
 theta_verdadeiro <- 0.3
 var_verdadeira <- theta_verdadeiro * (1 - theta_verdadeiro) # g(theta) = theta(1-theta)
@@ -54,7 +53,6 @@ eqm_envvum_var <- mean((envvum_var - var_verdadeira)^2)
 cat("--- Eficiência e EQM para g(theta) ---\n")
 cat(sprintf("EQM do EMV: %.6f\n", eqm_emv_var))
 cat(sprintf("EQM do ENVVUM: %.6f\n", eqm_envvum_var))
-cat("Nota: Observa-se o trade-off viés-variância na estimação não linear.\n\n")
 
 # 5. Avaliação de Propriedades Assintóticas (Normalidade Assintótica do EMV para theta)
 # Pelo TLC e propriedades de EMVs: sqrt(n)*(EMV - theta) -> N(0, I(theta)^-1)
@@ -262,3 +260,56 @@ legend("topright",
        bty = "n")
 
 cat("Observação: A aderência da densidade empírica à normal teórica valida a aplicação do Método Delta para funções contínuas de estimadores consistentes.\n")
+
+
+
+
+# ==============================================================================
+# Algoritmo de Mapeamento: Duplas Predefinidas -> Modelos Teóricos
+# Objetivo: Atribuição aleatória de distribuições da família exponencial
+# ==============================================================================
+
+# 1. Definição do Espaço Paramétrico de Distribuições (Conjunto D)
+# Os parâmetros de perturbação são fixados para garantir a pertinência à 
+# família exponencial uniparamétrica regular.
+distribuicoes_D <- c(
+  "Normal (Variância Conhecida)",
+  "Exponencial",
+  "Gama (Parâmetro de Forma Conhecido)",
+  "Bernoulli",
+  "Poisson",
+  "Geométrica"
+)
+
+# 2. Definição do Conjunto de Partições (Conjunto P: Duplas Predefinidas)
+
+duplas_P <- c(
+  "Dupla 1: [Nome A] e [Nome B]",
+  "Dupla 2: [Nome C] e [Nome D]",
+  "Dupla 3: [Nome E] e [Nome F]",
+  "Dupla 4: [Nome G] e [Nome H]",
+  "Dupla 5: [Nome I] e [Nome J]",
+  "Dupla 6: [Nome K] e [Nome L]"
+)
+
+m_particoes <- length(duplas_P)
+
+# 3. Procedimento de Amostragem Aleatória
+set.seed(20260424) # Fixação da semente para garantia de reprodutibilidade
+
+# Realização do sorteio
+modelos_sorteados <- sample(x = distribuicoes_D, 
+                            size = m_particoes, 
+                            replace = F)
+
+# 4. Estruturação e Apresentação do Mapeamento Final
+resultado_mapeamento <- data.frame(
+  Identificador_Dupla = duplas_P,
+  Modelo_Atribuido = modelos_sorteados
+)
+
+#==============================================================#
+#       ALOCAÇÃO ESTOCÁSTICA: DUPLAS -> MODELOS TEÓRICOS       #
+#==============================================================#
+
+print(resultado_mapeamento, row.names = FALSE)
