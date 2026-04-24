@@ -84,8 +84,6 @@ legend("topright",
        lwd = c(NA, 2), 
        bty = "n")
 
-cat("Observação: A aderência da densidade empírica à normal teórica atesta a consistência e normalidade assintótica.\n")
-
 
 
 # ==============================================================================
@@ -145,7 +143,7 @@ cat(sprintf("EQM do ENVVUM: %.6f\n", eqm_envvum_tau))
 # Var_assintótica = (tau'(lambda))^2 * I(lambda)^(-1)
 # Onde tau'(lambda) = e^(-lambda)(1 - lambda) e I(lambda)^(-1) = lambda / n
 
-n_assintotico <- 200
+n_assintotico <- 500
 var_assintotica_tau <- (lambda_verdadeiro * exp(-2 * lambda_verdadeiro) * (1 - lambda_verdadeiro)^2) / n_assintotico
 
 amostras_grandes <- matrix(rpois(n_assintotico * B, lambda = lambda_verdadeiro), 
@@ -171,8 +169,6 @@ legend("topright",
        col = c(NA, "darkred"), 
        lwd = c(NA, 2), 
        bty = "n")
-
-cat("Observação: A aderência da densidade empírica à normal teórica valida a aplicação do Método Delta para funções contínuas de estimadores consistentes.\n")
 
 
 
@@ -259,8 +255,6 @@ legend("topright",
        lwd = c(NA, 2), 
        bty = "n")
 
-cat("Observação: A aderência da densidade empírica à normal teórica valida a aplicação do Método Delta para funções contínuas de estimadores consistentes.\n")
-
 
 
 
@@ -313,3 +307,4 @@ resultado_mapeamento <- data.frame(
 #==============================================================#
 
 print(resultado_mapeamento, row.names = FALSE)
+
