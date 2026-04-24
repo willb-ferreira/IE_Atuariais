@@ -157,7 +157,7 @@ emv_tau_assintotico <- emv_lambda_assintotico * exp(-emv_lambda_assintotico)
 
 # Visualização da Densidade Assintótica
 hist(emv_tau_assintotico, breaks = 50, prob = TRUE, 
-     main = expression("Distribuição Assintótica de" ~ hat(tau)[MV] ~ "para n = " ~ spn_assintotico),
+     main = expression("Distribuição Assintótica de" ~ hat(tau)[MV] ~ "para n = 500"),
      xlab = expression(hat(tau)[MV]), ylab = "Densidade",
      col = "lightblue", border = "white")
 
@@ -178,78 +178,87 @@ cat("Observação: A aderência da densidade empírica à normal teórica valida
 
 
 
-####### Exponencial 
-
+# ==============================================================================
+# Aula 13: Estimação Pontual Computacional na Família Exponencial
+# Objetivo: Verificação empírica de propriedades em amostras finitas e assintóticas
+# Modelo: X_i ~ Exponencial(lambda)
+# Estimando a variância teórica dos sinistros: tau(lambda) = 1 / lambda^2
+# ==============================================================================
 
 # 1. Definição do Espaço Paramétrico e Hiperparâmetros da Simulação
-set.seed(20260420)   # Para reprodutibilidade
+set.seed(20260424)   # Para reprodutibilidade
 lambda_verdadeiro <- 2.5
-n_amostra <- 200      # Tamanho da amostra (pequeno, para evidenciar o viés do EMV)
+tau_verdadeiro <- 1 / (lambda_verdadeiro^2) # tau(lambda) = 1 / lambda^2
+
+n_amostra <- 200      # Tamanho da amostra mantido pequeno para evidenciar o viés em funções não lineares
 B <- 10000           # Número de replicações de Monte Carlo
 
 # 2. Geração da Matriz de Amostras Aleatórias
-# Cada coluna representa uma amostra independente de tamanho n
+# rexp gera as variáveis Exponenciais
 matriz_amostras <- matrix(rexp(n_amostra * B, rate = lambda_verdadeiro), 
                           nrow = n_amostra, ncol = B)
 
-# 3. Construção dos Estimadores
-# Estatística Suficiente: T = sum(X)
+# 3. Construção dos Estimadores e da Estatística Suficiente
+# Estatística Suficiente e Completa: T = sum(X) ~ Gama(n, lambda)
 soma_X <- colSums(matriz_amostras)
 
-# EMV: n / sum(X)
+# 3.1 Estimação do parâmetro canônico lambda
 emv_lambda <- n_amostra / soma_X
 
-# ENVVUM (Lehmann-Scheffé): (n - 1) / sum(X)
-envvum_lambda <- (n_amostra - 1) / soma_X
+# 3.2 Estimação de tau(lambda) = 1 / lambda^2
+# EMV (via propriedade de invariância do estimador de máxima verossimilhança)
+# Equivalente a (soma_X / n)^2
+emv_tau <- 1 / (emv_lambda^2)
+
+# ENVVUM (via Teorema de Lehmann-Scheffé usando T ~ Gama(n, lambda))
+envvum_tau <- (soma_X^2) / (n_amostra * (n_amostra + 1))
 
 # 4. Avaliação de Propriedades em Amostras Finitas
-# 4.1. Esperança Empírica e Viés
-esperanca_emv <- mean(emv_lambda)
-esperanca_envvum <- mean(envvum_lambda)
+cat("--- Análise de Viés para tau(lambda) = 1 / lambda^2 ---\n")
+vies_emv_tau <- mean(emv_tau) - tau_verdadeiro
+vies_envvum_tau <- mean(envvum_tau) - tau_verdadeiro
 
-vies_emv <- esperanca_emv - lambda_verdadeiro
-vies_envvum <- esperanca_envvum - lambda_verdadeiro
+cat(sprintf("Viés Empírico do EMV: %.6f\n", vies_emv_tau))
+cat(sprintf("Viés Empírico do ENVVUM: %.6f\n", vies_envvum_tau))
+cat("Nota: O ENVVUM deve apresentar viés empírico oscilando próximo de zero por construção.\n\n")
 
-vies_teorico_emv <- (n_amostra / (n_amostra - 1)) * lambda_verdadeiro - lambda_verdadeiro
+# 4.2. Erro Quadrático Médio (EQM) para tau(lambda)
+eqm_emv_tau <- mean((emv_tau - tau_verdadeiro)^2)
+eqm_envvum_tau <- mean((envvum_tau - tau_verdadeiro)^2)
 
-cat("--- Análise de Viés ---\n")
-cat(sprintf("Viés Empírico do EMV: %.4f (Teórico: %.4f)\n", vies_emv, vies_teorico_emv))
-cat(sprintf("Viés Empírico do ENVVUM: %.4f\n\n", vies_envvum))
+cat("--- Eficiência e EQM para tau(lambda) ---\n")
+cat(sprintf("EQM do EMV: %.6f\n", eqm_emv_tau))
+cat(sprintf("EQM do ENVVUM: %.6f\n", eqm_envvum_tau))
 
-# 4.2. Erro Quadrático Médio (EQM)
-eqm_emv <- mean((emv_lambda - lambda_verdadeiro)^2)
-eqm_envvum <- mean((envvum_lambda - lambda_verdadeiro)^2)
-
-cat("--- Eficiência e EQM ---\n")
-cat(sprintf("EQM do EMV: %.4f\n", eqm_emv))
-cat(sprintf("EQM do ENVVUM: %.4f\n", eqm_envvum))
-cat("Nota: Em amostras pequenas, o ENVVUM tende a apresentar menor EQM global.\n\n")
-
-# 5. Avaliação de Propriedades Assintóticas (Normalidade Assintótica do EMV)
-# Pela teoria: sqrt(n)*(EMV - lambda) -> N(0, lambda^2)
-# Logo, EMV para n grande comporta-se como N(lambda, lambda^2 / n)
+# 5. Avaliação de Propriedades Assintóticas (Normalidade Assintótica via Método Delta)
+# Var_assintótica = 4 / lambda^4
+# Como estamos dividindo por n na variância da distribuição amostral, fica 4 / (n * lambda^4)
 
 n_assintotico <- 500
+var_assintotica_tau <- 4 / (n_assintotico * (lambda_verdadeiro^4))
+
 amostras_grandes <- matrix(rexp(n_assintotico * B, rate = lambda_verdadeiro), 
                            nrow = n_assintotico, ncol = B)
-emv_assintotico <- n_assintotico / colSums(amostras_grandes)
+soma_X_assintotico <- colSums(amostras_grandes)
+emv_tau_assintotico <- (soma_X_assintotico / n_assintotico)^2
 
 # Visualização da Densidade Assintótica
-var_assintotica <- (lambda_verdadeiro^2) / n_assintotico
-
-hist(emv_assintotico, breaks = 50, prob = TRUE, 
-     main = "Distribuição Assintótica do EMV para n = 500",
-     xlab = expression(hat(lambda)[MV]), ylab = "Densidade",
+hist(emv_tau_assintotico, breaks = 50, prob = TRUE, 
+     main = expression("Distribuição Assintótica de" ~ hat(tau)[MV] ~ "para n = 500"),
+     xlab = expression(hat(tau)[MV]), ylab = "Densidade",
      col = "lightblue", border = "white")
 
-# Sobreposição da Curva Normal Teórica baseada na Informação de Fisher
-curve(dnorm(x, mean = lambda_verdadeiro, sd = sqrt(var_assintotica)), 
+# Sobreposição da Curva Normal Teórica baseada no Método Delta
+curve(dnorm(x, mean = tau_verdadeiro, sd = sqrt(var_assintotica_tau)), 
       col = "darkred", lwd = 2, add = TRUE)
-legend("right", 
-       legend = expression("Densidade Empírica", "Teórica:" ~ N(lambda, lambda^{2}/n)),
+
+legend("topright", 
+       legend = expression("Densidade Empírica", 
+                           N(tau(lambda), frac(4, n * lambda^4))),
        fill = c("lightblue", NA), 
        border = c("white", NA), 
        col = c(NA, "darkred"), 
        lwd = c(NA, 2), 
        bty = "n")
-cat("Observação: A sobreposição da curva normal teórica confirma a normalidade assintótica do EMV.\n")
+
+cat("Observação: A aderência da densidade empírica à normal teórica valida a aplicação do Método Delta para funções contínuas de estimadores consistentes.\n")
