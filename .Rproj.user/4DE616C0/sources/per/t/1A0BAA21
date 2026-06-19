@@ -1,27 +1,27 @@
 {
-    "id": "A7068A75",
-    "path": "~/GitHub/IE_Atuariais/Aula_3.R",
-    "project_path": "Aula_3.R",
+    "id": "1A0BAA21",
+    "path": "~/GitHub/IE_Atuariais/Aula_2.R",
+    "project_path": "Aula_2.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "4041777674",
     "contents": "",
-    "dirty": true,
-    "created": 1781876869552.0,
+    "dirty": false,
+    "created": 1781876345085.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 2,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "95,3",
-        "scrollLine": "95"
+        "cursorPosition": "33,53",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1781881945,
+    "lastKnownWriteTime": 1781876739,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1781881968439,
+    "last_content_update": 1781876739950,
     "read_only": false,
     "read_only_alternatives": []
 }

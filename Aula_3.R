@@ -76,8 +76,7 @@ abline(v=2, lty=2, col="red")
 abline(h=0.05, lty=2, col="red")
 
 # ==============================================================================
-# AULA COMPUTACIONAL: PROPRIEDADES ASSINTÓTICAS EM TESTES DE HIPÓTESES
-# Disciplina: Inferência Estatística para Atuária (ET659)
+# PROPRIEDADES ASSINTÓTICAS EM TESTES DE HIPÓTESES
 # ==============================================================================
 
 set.seed(2026)
